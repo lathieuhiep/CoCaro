@@ -1,5 +1,7 @@
 package com.techja.cocaro;
 
+import java.util.Comparator;
+
 public class BanCo {
     public static final int SO_HANG = 10;
     public static final int SO_COT = 10;
@@ -17,6 +19,13 @@ public class BanCo {
         nguoiChoi2 = new NguoiChoi(QuanCo.O, ten2);
         tySo = RESET;
     }
+
+    private Comparator<QuanCo> sxNgang = new Comparator<QuanCo>() {
+        @Override
+        public int compare(QuanCo qc1, QuanCo qc2) {
+            return qc1.getX() - qc2.getY();
+        }
+    };
 
     public void veBanCo() {
         for (int i = 0; i < SO_HANG; i++) {
@@ -73,9 +82,7 @@ public class BanCo {
             return;
         }
 
-        if ( kiemTraThangNgang(nguoiChoi1)
-                || kiemTraThangDoc(nguoiChoi1)
-                || kiemTraThangCheo(nguoiChoi1)
+        if ( kiemTraThangNgang(nguoiChoi1) || kiemTraThangDoc(nguoiChoi1) || kiemTraThangCheo(nguoiChoi1)
         ) {
             String[] item = tySo.split(":");
             tySo = Integer.parseInt(item[0]) + 1 + ":" + item[1];
@@ -83,9 +90,7 @@ public class BanCo {
             System.out.println("Tỷ số: " + tySo);
 
             xoaBanCo();
-        } else if (kiemTraThangNgang(nguoiChoi2)
-                || kiemTraThangDoc(nguoiChoi2)
-                || kiemTraThangCheo(nguoiChoi2)) {
+        } else if (kiemTraThangNgang(nguoiChoi2) || kiemTraThangDoc(nguoiChoi2) || kiemTraThangCheo(nguoiChoi2)) {
             String[] item = tySo.split(":");
             tySo = item[0] + ":" + (Integer.parseInt(item[1]) + 1);
             System.out.println("Người chơi 2 thắng!");
@@ -104,6 +109,26 @@ public class BanCo {
     }
 
     private boolean kiemTraThangNgang(NguoiChoi nguoiChoi) {
+        nguoiChoi.getListQC().sort(sxNgang);
+
+        for (int i = 0; i < nguoiChoi.getListQC().size(); i++) {
+            int demQC = 1;
+            QuanCo qcTruoc = nguoiChoi.getListQC().get(i);
+
+            for (int j = i + 1; j < nguoiChoi.getListQC().size() - 1; j++) {
+                QuanCo qcSau = nguoiChoi.getListQC().get(j);
+
+                if ( qcSau.getX() == qcTruoc.getX() + 50 && qcSau.getY() == qcTruoc.getY() ) {
+                    demQC ++;
+                    qcTruoc = qcSau;
+                }
+
+                if (demQC >= 5) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 }
