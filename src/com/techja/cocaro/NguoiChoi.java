@@ -1,5 +1,6 @@
 package com.techja.cocaro;
 
+import javax.swing.*;
 import java.util.ArrayList;
 
 public class NguoiChoi {
@@ -14,27 +15,32 @@ public class NguoiChoi {
     }
 
     public boolean danhCo(int x, int y, NguoiChoi nguoiChoi2) {
-        if (x < 0 || y < 0 || x > BanCo.SO_COT * BanCo.SIZE || y > BanCo.SO_HANG * BanCo.SIZE) {
+        if (x < BanCo.PADDING || y < BanCo.PADDING || x > BanCo.SO_COT * BanCo.SIZE + BanCo.PADDING || y > BanCo.SO_HANG * BanCo.SIZE + BanCo.PADDING) {
             System.out.println("Vị trí đánh không phù hợp");
+
+            JOptionPane.showMessageDialog(null, "Vị trí đánh không phù hợp");
+
             return false;
         }
 
-        int cot = x / BanCo.SIZE;
-        int hang = y / BanCo.SIZE;
+        int cot = (x - BanCo.PADDING) / BanCo.SIZE;
+        int hang = (y - BanCo.PADDING) / BanCo.SIZE;
 
-        x = cot * BanCo.SIZE + BanCo.SIZE / 2;
-        y = hang * BanCo.SIZE + BanCo.SIZE / 2;
+        x = cot * BanCo.SIZE + BanCo.SIZE / 2 + BanCo.PADDING;
+        y = hang * BanCo.SIZE + BanCo.SIZE / 2 + BanCo.PADDING;
 
         QuanCo qc = new QuanCo(x, y, loaiQC);
         int viTri = listQC.indexOf(qc);
         if (viTri >= 0) {
-            System.out.println("Lỗi: vị trí đã có quân cờ " + x + "," + y);
+            JOptionPane.showMessageDialog(null, "Lỗi: vị trí đã có quân cờ " + x + "," + y);
+
             return false;
         }
 
         viTri = nguoiChoi2.listQC.indexOf(qc);
         if (viTri >= 0) {
-            System.out.println("Lỗi: vị trí đã có quân cờ " + x + "," + y);
+            JOptionPane.showMessageDialog(null, "Lỗi: vị trí đã có quân cờ " + x + "," + y);
+
             return false;
         }
 

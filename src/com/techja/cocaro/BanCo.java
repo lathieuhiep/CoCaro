@@ -1,23 +1,41 @@
 package com.techja.cocaro;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Comparator;
 
-public class BanCo {
+public class BanCo extends JPanel {
+    private static final long serialVersionUID = 1;
     public static final int SO_HANG = 10;
     public static final int SO_COT = 10;
     public static final int SIZE = 50;
     private static final String RESET = "0:0";
+    public static final int PADDING = 30;
 
-    private String mauSac;
+    private Color mauSac;
     private String tySo;
     private NguoiChoi nguoiChoi1;
     private NguoiChoi nguoiChoi2;
+    private char loaiQC = 'X';
 
-    public BanCo(String mauSac, String ten1, String ten2) {
+    public BanCo(Color mauSac, String ten1, String ten2) {
         this.mauSac = mauSac;
         nguoiChoi1 = new NguoiChoi(QuanCo.X, ten1);
         nguoiChoi2 = new NguoiChoi(QuanCo.O, ten2);
         tySo = RESET;
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                char type = danhCo(e.getX(), e.getY(), loaiQC);
+                kiemTraThangCuoc();
+                loaiQC = type;
+            }
+        });
+
+        requestFocus();
     }
 
     private Comparator<QuanCo> sxNgang = new Comparator<QuanCo>() {
@@ -27,35 +45,56 @@ public class BanCo {
         }
     };
 
-    public void veBanCo() {
-        for (int i = 0; i < SO_HANG; i++) {
-            for (int j = 0; j < SO_COT; j++) {
+    public void veBanCo() {}
+
+    public void veBanCo2(Graphics2D g) {
+        setBackground(mauSac);
+        g.setColor(Color.yellow);
+
+        for (int i = 0; i <= SO_HANG; i++) {
+            g.drawLine(PADDING, i * SIZE + PADDING, SO_COT * SIZE + PADDING, i * SIZE + PADDING);
+            g.drawLine(i * SIZE + PADDING, PADDING, i * SIZE + PADDING, SO_COT * SIZE + PADDING);
+        }
+
+        Font f = new Font("Tahoma", Font.BOLD, 30);
+        g.setFont(f);
+
+        int h = getFontMetrics(f).getHeight();
+        int w = getFontMetrics(f).stringWidth("X");
+
+        for (int i = 0; i <= SO_HANG; i++) {
+            for (int j = 0; j <= SO_COT; j++) {
                 int x = j * SIZE + SIZE / 2;
                 int y = i * SIZE + SIZE / 2;
 
-                QuanCo qc = new QuanCo(x, y, '-');
+                QuanCo qc = new QuanCo(x + PADDING, y + PADDING, ' ');
+
                 if (nguoiChoi1.getListQC().indexOf(qc) >= 0) {
-                    System.out.print("|x");
+                    g.setColor(Color.yellow);
+                    g.drawString("X", x + PADDING - w / 2, y + PADDING + h / 3);
                 } else if (nguoiChoi2.getListQC().indexOf(qc) >=0) {
-                    System.out.print("|o");
-                } else {
-                    System.out.print("| ");
+                    g.setColor(Color.CYAN);
+                    g.drawString("O", x + PADDING - w / 2, y + PADDING + h / 3);
                 }
             }
-
-            System.out.println("|");
         }
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        veBanCo2((Graphics2D)g);
     }
 
     public char danhCo(int x, int y, char loaiQC) {
         if (loaiQC == nguoiChoi1.getLoaiQC()) {
             if (nguoiChoi1.danhCo(x, y, nguoiChoi2)) {
-                veBanCo();
+                repaint();
                 return nguoiChoi2.getLoaiQC();
             }
         } else {
             if (nguoiChoi2.danhCo(x, y, nguoiChoi1)) {
-                veBanCo();
+                repaint();
                 return nguoiChoi1.getLoaiQC();
             }
         }
@@ -77,7 +116,7 @@ public class BanCo {
         return nguoiChoi1.getLoaiQC();
     }
 
-    public void kiemTraThangcuoc() {
+    public void kiemTraThangCuoc() {
         if ( nguoiChoi1.getListQC().size() + nguoiChoi1.getListQC().size() < 9 ) {
             return;
         }
@@ -86,15 +125,15 @@ public class BanCo {
         ) {
             String[] item = tySo.split(":");
             tySo = Integer.parseInt(item[0]) + 1 + ":" + item[1];
-            System.out.println("Người chơi 1 thắng!");
-            System.out.println("Tỷ số: " + tySo);
+
+            JOptionPane.showMessageDialog(null, "Người chơi 1 thắng: " + tySo);
 
             xoaBanCo();
         } else if (kiemTraThangNgang(nguoiChoi2) || kiemTraThangDoc(nguoiChoi2) || kiemTraThangCheo(nguoiChoi2)) {
             String[] item = tySo.split(":");
             tySo = item[0] + ":" + (Integer.parseInt(item[1]) + 1);
-            System.out.println("Người chơi 2 thắng!");
-            System.out.println("Tỷ số: " + tySo);
+
+            JOptionPane.showMessageDialog(null, "Người chơi 2 thắng: " + tySo);
 
             xoaBanCo();
         }
