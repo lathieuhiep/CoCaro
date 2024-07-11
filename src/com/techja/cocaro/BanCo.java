@@ -4,10 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
 import java.util.Comparator;
 
 public class BanCo extends JPanel {
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     public static final int SO_HANG = 10;
     public static final int SO_COT = 10;
     public static final int SIZE = 50;
@@ -37,13 +38,6 @@ public class BanCo extends JPanel {
 
         requestFocus();
     }
-
-    private Comparator<QuanCo> sxNgang = new Comparator<QuanCo>() {
-        @Override
-        public int compare(QuanCo qc1, QuanCo qc2) {
-            return qc1.getX() - qc2.getY();
-        }
-    };
 
     public void veBanCo() {}
 
@@ -83,7 +77,29 @@ public class BanCo extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        veMenu(g);
         veBanCo2((Graphics2D)g);
+    }
+
+    public void veMenu(Graphics g) {
+        Font f = new Font("Tahoma", Font.PLAIN, 30);
+        g.setFont(f);
+        g.setColor(Color.yellow);
+        g.drawString(nguoiChoi1.getTen(), 600, 100);
+
+        Font f1 = new Font("Tahoma", Font.PLAIN, 20);
+        g.setFont(f1);
+        g.setColor(Color.white);
+        g.drawString("VS", 700, 100);
+
+        g.setFont(f);
+        g.setColor(Color.CYAN);
+        g.drawString(nguoiChoi2.getTen(), 750, 100);
+
+        Font f2 = new Font("Tahoma", Font.PLAIN, 50);
+        g.setFont(f2);
+        g.setColor(Color.white);
+        g.drawString(tySo, 678, 160);
     }
 
     public char danhCo(int x, int y, char loaiQC) {
@@ -121,7 +137,7 @@ public class BanCo extends JPanel {
             return;
         }
 
-        if ( kiemTraThangNgang(nguoiChoi1) || kiemTraThangDoc(nguoiChoi1) || kiemTraThangCheo(nguoiChoi1)
+        if ( kiemTraThangNgang(nguoiChoi1) || kiemTraThangDoc(nguoiChoi1) || kiemTraThangCheoPhai(nguoiChoi1) || kiemTraThangCheoTrai(nguoiChoi1)
         ) {
             String[] item = tySo.split(":");
             tySo = Integer.parseInt(item[0]) + 1 + ":" + item[1];
@@ -129,7 +145,7 @@ public class BanCo extends JPanel {
             JOptionPane.showMessageDialog(null, "Người chơi 1 thắng: " + tySo);
 
             xoaBanCo();
-        } else if (kiemTraThangNgang(nguoiChoi2) || kiemTraThangDoc(nguoiChoi2) || kiemTraThangCheo(nguoiChoi2)) {
+        } else if (kiemTraThangNgang(nguoiChoi2) || kiemTraThangDoc(nguoiChoi2) || kiemTraThangCheoPhai(nguoiChoi2) || kiemTraThangCheoTrai(nguoiChoi2)) {
             String[] item = tySo.split(":");
             tySo = item[0] + ":" + (Integer.parseInt(item[1]) + 1);
 
@@ -139,27 +155,19 @@ public class BanCo extends JPanel {
         }
     }
 
-    private boolean kiemTraThangCheo(NguoiChoi nguoiChoi) {
-        return false;
-    }
-
-    private boolean kiemTraThangDoc(NguoiChoi nguoiChoi) {
-        return false;
-    }
-
-    private boolean kiemTraThangNgang(NguoiChoi nguoiChoi) {
+    private boolean kiemTraThangCheoPhai(NguoiChoi nguoiChoi) {
         nguoiChoi.getListQC().sort(sxNgang);
 
         for (int i = 0; i < nguoiChoi.getListQC().size(); i++) {
             int demQC = 1;
-            QuanCo qcTruoc = nguoiChoi.getListQC().get(i);
+            QuanCo qCoTruoc = nguoiChoi.getListQC().get(i);
 
-            for (int j = i + 1; j < nguoiChoi.getListQC().size() - 1; j++) {
-                QuanCo qcSau = nguoiChoi.getListQC().get(j);
+            for (int j = 1; j < nguoiChoi.getListQC().size(); j++) {
+                QuanCo qCoSau = nguoiChoi.getListQC().get(j);
 
-                if ( qcSau.getX() == qcTruoc.getX() + 50 && qcSau.getY() == qcTruoc.getY() ) {
+                if ( qCoSau.getY() == qCoTruoc.getY() + SIZE && qCoSau.getX() == qCoTruoc.getX() + SIZE ) {
                     demQC ++;
-                    qcTruoc = qcSau;
+                    qCoTruoc = qCoSau;
                 }
 
                 if (demQC >= 5) {
@@ -170,4 +178,96 @@ public class BanCo extends JPanel {
 
         return false;
     }
+
+    private boolean kiemTraThangCheoTrai(NguoiChoi nguoiChoi) {
+        nguoiChoi.getListQC().sort(sxNgangGiam);
+
+        for (int i = 0; i < nguoiChoi.getListQC().size(); i++) {
+            int demQC = 1;
+            QuanCo qCoTruoc = nguoiChoi.getListQC().get(i);
+
+            for (int j = 1; j < nguoiChoi.getListQC().size(); j++) {
+                QuanCo qCoSau = nguoiChoi.getListQC().get(j);
+
+                if ( qCoSau.getY() == qCoTruoc.getY() + SIZE && qCoSau.getX() == qCoTruoc.getX() - SIZE ) {
+                    demQC ++;
+                    qCoTruoc = qCoSau;
+                }
+
+                if (demQC >= 5) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean kiemTraThangDoc(NguoiChoi nguoiChoi) {
+        nguoiChoi.getListQC().sort(sxDoc);
+
+        for (int i = 0; i < nguoiChoi.getListQC().size(); i++) {
+            int demQC = 1;
+            QuanCo qCoTruoc = nguoiChoi.getListQC().get(i);
+
+            for (int j = 1; j < nguoiChoi.getListQC().size(); j++) {
+                QuanCo qCoSau = nguoiChoi.getListQC().get(j);
+
+                if ( qCoSau.getY() == qCoTruoc.getY() + SIZE && qCoSau.getX() == qCoTruoc.getX()) {
+                    demQC ++;
+                    qCoTruoc = qCoSau;
+                }
+
+                if (demQC >= 5) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean kiemTraThangNgang(NguoiChoi nguoiChoi) {
+        nguoiChoi.getListQC().sort(sxNgang);
+
+        for (int i = 0; i < nguoiChoi.getListQC().size(); i++) {
+            int demQC = 1;
+            QuanCo qCoTruoc = nguoiChoi.getListQC().get(i);
+
+            for (int j = 1; j < nguoiChoi.getListQC().size(); j++) {
+                QuanCo qCoSau = nguoiChoi.getListQC().get(j);
+
+                if ( qCoSau.getX() == qCoTruoc.getX() + SIZE && qCoSau.getY() == qCoTruoc.getY() ) {
+                    demQC ++;
+                    qCoTruoc = qCoSau;
+                }
+
+                if (demQC >= 5) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private Comparator<QuanCo> sxNgang = new Comparator<QuanCo>() {
+        @Override
+        public int compare(QuanCo qc1, QuanCo qc2) {
+            return qc1.getX() - qc2.getX();
+        }
+    };
+
+    private Comparator<QuanCo> sxDoc = new Comparator<QuanCo>() {
+        @Override
+        public int compare(QuanCo qc1, QuanCo qc2) {
+            return qc1.getY() - qc2.getY();
+        }
+    };
+
+    private Comparator<QuanCo> sxNgangGiam = new Comparator<QuanCo>() {
+        @Override
+        public int compare(QuanCo qc1, QuanCo qc2) {
+            return -( qc1.getX() - qc2.getX() );
+        }
+    };
 }

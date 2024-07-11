@@ -6,7 +6,8 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GUI extends JFrame {
-    private static final int W_FRAME = 600;
+    private static final long serialVersionUID = 1L;
+    private static final int W_FRAME = 900;
     private static final int H_FRAME = 600;
 
     public GUI() {
